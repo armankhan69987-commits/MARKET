@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Win Go 30 Sec</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#0f172a;
+  color:#fff;
+}
+.app{max-width:420px;margin:auto;padding:10px}
+
+/* HEADER */
+.header{
+  background:#111827;
+  padding:10px;
+  border-radius:12px;
+}
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.title{font-size:18px;font-weight:bold}
+.balance{
+  background:#16a34a;
+  padding:6px 12px;
+  border-radius:8px;
+  font-size:14px;
+}
+.dw{display:flex;gap:10px;margin-top:8px}
+.dw button{
+  flex:1;padding:10px;border:none;border-radius:8px;
+  font-weight:bold;cursor:pointer
+}
+.deposit{background:#22c55e}
+.withdraw{background:#facc15}
+
+/* INFO */
+.info{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+}
+
+/* LATEST */
+.latest{
+  width:35%;
+  background:#020617;
+  border-radius:12px;
+  padding:8px;
+}
+.latest div{
+  text-align:center;
+  padding:8px;
+  margin:6px 0;
+  border-radius:8px;
+  font-weight:bold;
+}
+
+/* TIMER BIG CIRCLE */
+.timerbox{
+  width:65%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+}
+.period{
+  margin-top:6px;
+  font-size:14px;
+  opacity:.8;
+}
+.timerCircle{
+  margin-top:16px;
+  width:170px;
+  height:170px;
+  border-radius:50%;
+  background:radial-gradient(circle at top,#1e293b,#020617);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:48px;
+  font-weight:bold;
+  box-shadow:0 0 25px rgba(0,0,0,.6);
+}
+.redblink{
+  animation:blink 1s infinite;
+  color:#ef4444;
+}
+@keyframes blink{
+  0%{opacity:1}
+  50%{opacity:.3}
+  100%{opacity:1}
+}
+
+/* MY BET HISTORY */
+.mybets{
+  width:100%;
+  margin-top:14px;
+  background:#020617;
+  border-radius:12px;
+  padding:10px;
+}
+.mybets h4{
+  margin:0 0 6px;
+  font-size:14px;
+  text-align:center;
+  opacity:.8;
+}
+.betItem{
+  display:flex;
+  justify-content:space-between;
+  padding:6px 8px;
+  margin:4px 0;
+  background:#111827;
+  border-radius:8px;
+  font-size:13px;
+}
+
+/* COLORS */
+.green{background:#22c55e}
+.red{background:#ef4444}
+.violet{background:#8b5cf6}
+
+/* NUMBERS */
+.numbers{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+  margin-top:16px;
+}
+.num{
+  padding:14px 0;
+  text-align:center;
+  border-radius:12px;
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* BIG SMALL */
+.bigsmall{display:flex;gap:10px;margin-top:12px}
+.bigsmall button{
+  flex:1;padding:12px;border:none;border-radius:10px;
+  font-weight:bold;font-size:16px
+}
+.big{background:#0ea5e9}
+.small{background:#fb7185}
+
+/* TREND */
+.trend{
+  display:flex;
+  gap:6px;
+  margin:12px 0;
+  justify-content:center;
+}
+.dot{
+  width:14px;
+  height:14px;
+  border-radius:50%;
+}
+
+/* POPUP */
+.popup{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.6);
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+.popup div{
+  background:#020617;
+  padding:20px 30px;
+  border-radius:14px;
+  font-size:22px;
+  font-weight:bold;
+}
+.win{color:#22c55e}
+.lose{color:#ef4444}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<div class="header">
+  <div class="top">
+    <div class="title">WIN GO 30 SEC</div>
+    <div class="balance">₹ <span id="bal">100</span></div>
+  </div>
+  <div class="dw">
+    <button class="deposit">Deposit</button>
+    <button class="withdraw">Withdraw</button>
+  </div>
+</div>
+
+<div class="info">
+  <div class="latest" id="latest"></div>
+
+  <div class="timerbox">
+    <div class="period">Period: <span id="period">1</span></div>
+    <div class="timerCircle" id="timer">30</div>
+
+    <!-- MY BET HISTORY -->
+    <div class="mybets">
+      <h4>My Bet History</h4>
+      <div id="mybets"></div>
+    </div>
+  </div>
+</div>
+
+<div class="numbers">
+  <div class="num violet" onclick="betNum(0)">0</div>
+  <div class="num green" onclick="betNum(1)">1</div>
+  <div class="num green" onclick="betNum(2)">2</div>
+  <div class="num green" onclick="betNum(3)">3</div>
+  <div class="num green" onclick="betNum(4)">4</div>
+  <div class="num violet" onclick="betNum(5)">5</div>
+  <div class="num red" onclick="betNum(6)">6</div>
+  <div class="num red" onclick="betNum(7)">7</div>
+  <div class="num red" onclick="betNum(8)">8</div>
+  <div class="num red" onclick="betNum(9)">9</div>
+</div>
+
+<div class="bigsmall">
+  <button class="big" onclick="betType('Big')">BIG</button>
+  <button class="small" onclick="betType('Small')">SMALL</button>
+</div>
+
+<div class="trend" id="trend"></div>
+</div>
+
+<div class="popup" id="popup">
+  <div id="popupText"></div>
+</div>
+
+<script>
+let balance=100,bets=[],time=30,period=1;
+let latest=[],trend=[];
+
+function bal(){document.getElementById('bal').innerText=balance}
+
+function betNum(n){
+  bets.push({type:'Number',val:n,amt:10});
+  balance-=10;bal();renderMyBets();
+}
+function betType(t){
+  bets.push({type:'Size',val:t,amt:10});
+  balance-=10;bal();renderMyBets();
+}
+
+function renderMyBets(){
+  let box=document.getElementById('mybets');
+  box.innerHTML='';
+  bets.forEach(b=>{
+    box.innerHTML+=`<div class="betItem">
+      <span>${b.type}: ${b.val}</span>
+      <span>₹${b.amt}</span>
+    </div>`;
+  });
+}
+
+setInterval(()=>{
+  time--;
+  let t=document.getElementById('timer');
+  t.innerText=time;
+  t.classList.toggle('redblink',time<=5);
+  if(time===0){
+    result();
+    time=30;period++;
+    document.getElementById('period').innerText=period;
+  }
+},1000);
+
+function result(){
+  let n=Math.floor(Math.random()*10);
+  let c=(n==0||n==5)?'violet':(n<=4?'green':'red');
+  let s=n>=5?'Big':'Small';
+
+  latest.unshift({n,c});
+  if(latest.length>5)latest.pop();
+  document.getElementById('latest').innerHTML=
+    latest.map(x=>`<div class="${x.c}">${x.n}</div>`).join('');
+
+  trend.unshift(c);
+  if(trend.length>10)trend.pop();
+  document.getElementById('trend').innerHTML=
+    trend.map(x=>`<div class="dot ${x}"></div>`).join('');
+
+  if(bets.length){
+    let win=0;
+    bets.forEach(b=>{
+      if(b.type==='Number'&&b.val===n)win+=20;
+      if(b.type==='Size'&&b.val===s)win+=20;
+    });
+    balance+=win;bal();
+    popup(win>0);
+  }
+
+  bets=[];
+  document.getElementById('mybets').innerHTML='';
+}
+
+function popup(w){
+  let p=document.getElementById('popup');
+  let t=document.getElementById('popupText');
+  t.innerText=w?'YOU WIN':'YOU LOSE';
+  t.className=w?'win':'lose';
+  p.style.display='flex';
+  setTimeout(()=>p.style.display='none',3000);
+}
+</script>
+</body>
+</html>
