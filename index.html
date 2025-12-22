@@ -3,67 +3,214 @@
 <head>
 <meta charset="UTF-8">
 <title>Win Go 30 Sec</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-body{margin:0;font-family:Arial;background:#0f172a;color:#fff}
-.app{max-width:420px;margin:auto;padding:10px}
-.header{background:#020617;padding:10px;border-radius:12px}
-.top{display:flex;justify-content:space-between}
-.balance{background:#16a34a;padding:6px 12px;border-radius:8px}
-.dw{display:flex;gap:10px;margin-top:8px}
-.dw button{flex:1;padding:10px;border:none;border-radius:8px;font-weight:bold}
-.deposit{background:#22c55e}
-.withdraw{background:#facc15}
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-.info{display:flex;gap:10px;margin-top:12px}
-.latest{width:35%;background:#020617;border-radius:12px;padding:6px}
-.latest div{text-align:center;padding:8px;margin:6px 0;border-radius:8px;font-weight:bold}
-.timerbox{width:65%;text-align:center}
-.timerCircle{
-width:160px;height:160px;margin:auto;border-radius:50%;
-background:radial-gradient(circle,#1e293b,#020617);
-display:flex;align-items:center;justify-content:center;
-font-size:44px;font-weight:bold
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont;
+  background:#0f172a;
+  color:#fff;
 }
-.redblink{color:#ef4444;animation:blink 1s infinite}
+.app{
+  max-width:420px;
+  margin:auto;
+  padding:10px;
+}
+.header{
+  background:#020617;
+  border-radius:14px;
+  padding:12px;
+}
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:15px;
+}
+.balance{
+  background:#16a34a;
+  padding:6px 12px;
+  border-radius:20px;
+  font-weight:600;
+}
+.dw{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+.dw button{
+  flex:1;
+  padding:12px 0;
+  border:none;
+  border-radius:10px;
+  font-size:15px;
+  font-weight:600;
+}
+.deposit{background:#22c55e}
+.withdraw{background:#facc15;color:#000}
+
+/* TIMER + LATEST */
+.info{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+}
+.latest{
+  width:34%;
+  background:#020617;
+  border-radius:12px;
+  padding:6px;
+}
+.latest div{
+  text-align:center;
+  padding:10px 0;
+  margin:6px 0;
+  border-radius:8px;
+  font-weight:700;
+  font-size:16px;
+}
+.timerbox{
+  width:66%;
+  text-align:center;
+}
+.timerCircle{
+  width:150px;
+  height:150px;
+  margin:6px auto;
+  border-radius:50%;
+  background:radial-gradient(circle,#1e293b,#020617);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:40px;
+  font-weight:700;
+}
+.redblink{
+  color:#ef4444;
+  animation:blink 1s infinite;
+}
 @keyframes blink{50%{opacity:.3}}
 
 .green{background:#22c55e}
 .red{background:#ef4444}
 .violet{background:#8b5cf6}
 
-.numbers{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}
-.num{padding:14px 0;border-radius:12px;font-weight:bold;text-align:center}
+/* NUMBERS */
+.numbers{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+  margin-top:14px;
+}
+.num{
+  padding:14px 0;
+  border-radius:12px;
+  text-align:center;
+  font-weight:700;
+  font-size:16px;
+}
 
-.bigsmall{display:flex;gap:10px;margin-top:14px}
-.bigsmall button{flex:1;padding:12px;border:none;border-radius:10px;font-weight:bold}
+/* BIG SMALL */
+.bigsmall{
+  display:flex;
+  gap:10px;
+  margin-top:14px;
+}
+.bigsmall button{
+  flex:1;
+  padding:14px 0;
+  border:none;
+  border-radius:12px;
+  font-size:16px;
+  font-weight:700;
+}
 .big{background:#0ea5e9}
 .small{background:#fb7185}
 
-.coupon{margin-top:12px;display:flex;gap:6px}
-.coupon input{flex:1;padding:8px;border-radius:8px;border:none}
-.coupon button{padding:8px 12px;border:none;border-radius:8px;background:#22c55e}
-
-.mybets{margin-top:14px;background:#020617;padding:8px;border-radius:12px}
-.betItem{display:flex;justify-content:space-between;font-size:13px;margin:4px 0}
-
-.trend{display:flex;gap:6px;justify-content:center;margin-top:10px}
-.dot{width:12px;height:12px;border-radius:50%}
-
-.popup,.betModal,.adminPanel{
-position:fixed;inset:0;background:rgba(0,0,0,.7);
-display:none;align-items:center;justify-content:center}
-
-.popup div,.betBox,.adminBox{
-background:#020617;padding:20px;border-radius:14px;text-align:center}
-
-.betBox input{width:100%;padding:10px;margin-top:10px;border-radius:8px;border:none}
-.betBox button,.adminBox button{
-margin-top:10px;width:100%;padding:10px;border:none;
-border-radius:8px;background:#22c55e;font-weight:bold
+/* COUPON */
+.coupon{
+  display:flex;
+  gap:6px;
+  margin-top:12px;
 }
-.adminBox input{
-width:100%;padding:10px;border-radius:8px;border:none;margin-top:10px
+.coupon input{
+  flex:1;
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  font-size:14px;
+}
+.coupon button{
+  padding:10px 14px;
+  border:none;
+  border-radius:10px;
+  background:#22c55e;
+  font-weight:700;
+}
+
+/* BET HISTORY */
+.mybets{
+  margin-top:14px;
+  background:#020617;
+  border-radius:12px;
+  padding:10px;
+  font-size:13px;
+}
+.betItem{
+  display:flex;
+  justify-content:space-between;
+  margin:4px 0;
+}
+
+/* TREND */
+.trend{
+  display:flex;
+  justify-content:center;
+  gap:6px;
+  margin-top:10px;
+}
+.dot{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+}
+
+/* MODALS */
+.betModal,.adminPanel,.popup{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+}
+.betBox,.adminBox,.popup div{
+  background:#020617;
+  width:90%;
+  max-width:300px;
+  padding:16px;
+  border-radius:14px;
+  text-align:center;
+}
+.betBox input,.adminBox input{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:10px;
+  border:none;
+  font-size:15px;
+}
+.betBox button,.adminBox button{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:#22c55e;
+  font-weight:700;
 }
 </style>
 </head>
@@ -72,50 +219,50 @@ width:100%;padding:10px;border-radius:8px;border:none;margin-top:10px
 <div class="app">
 
 <div class="header">
-<div class="top">
-<div>WIN GO 30 SEC</div>
-<div class="balance">₹ <span id="bal">100</span></div>
-</div>
-<div class="dw">
-<button class="deposit" onclick="deposit()">Deposit</button>
-<button class="withdraw" onclick="withdraw()">Withdraw</button>
-</div>
+  <div class="top">
+    <div>WIN GO 30 SEC</div>
+    <div class="balance">₹ <span id="bal">100</span></div>
+  </div>
+  <div class="dw">
+    <button class="deposit" onclick="deposit()">Deposit</button>
+    <button class="withdraw" onclick="withdraw()">Withdraw</button>
+  </div>
 </div>
 
 <div class="info">
-<div class="latest" id="latest"></div>
-<div class="timerbox">
-<div>Period <span id="period">1</span></div>
-<div class="timerCircle" id="timer">30</div>
-</div>
+  <div class="latest" id="latest"></div>
+  <div class="timerbox">
+    <div>Period <span id="period">1</span></div>
+    <div class="timerCircle" id="timer">30</div>
+  </div>
 </div>
 
 <div class="numbers">
-<div class="num violet" onclick="openBet('Number',0)">0</div>
-<div class="num green" onclick="openBet('Number',1)">1</div>
-<div class="num red" onclick="openBet('Number',2)">2</div>
-<div class="num green" onclick="openBet('Number',3)">3</div>
-<div class="num red" onclick="openBet('Number',4)">4</div>
-<div class="num violet" onclick="openBet('Number',5)">5</div>
-<div class="num red" onclick="openBet('Number',6)">6</div>
-<div class="num green" onclick="openBet('Number',7)">7</div>
-<div class="num red" onclick="openBet('Number',8)">8</div>
-<div class="num green" onclick="openBet('Number',9)">9</div>
+  <div class="num violet" onclick="openBet('Number',0)">0</div>
+  <div class="num green" onclick="openBet('Number',1)">1</div>
+  <div class="num green" onclick="openBet('Number',2)">2</div>
+  <div class="num green" onclick="openBet('Number',3)">3</div>
+  <div class="num green" onclick="openBet('Number',4)">4</div>
+  <div class="num violet" onclick="openBet('Number',5)">5</div>
+  <div class="num red" onclick="openBet('Number',6)">6</div>
+  <div class="num red" onclick="openBet('Number',7)">7</div>
+  <div class="num red" onclick="openBet('Number',8)">8</div>
+  <div class="num red" onclick="openBet('Number',9)">9</div>
 </div>
 
 <div class="bigsmall">
-<button class="big" onclick="openBet('Size','Big')">BIG</button>
-<button class="small" onclick="openBet('Size','Small')">SMALL</button>
+  <button class="big" onclick="openBet('Size','Big')">BIG</button>
+  <button class="small" onclick="openBet('Size','Small')">SMALL</button>
 </div>
 
 <div class="coupon">
-<input id="coupon" placeholder="Coupon  ">
-<button onclick="claim()">Claim</button>
+  <input id="coupon" placeholder="Coupon / Admin Code">
+  <button onclick="claim()">Claim</button>
 </div>
 
 <div class="mybets">
-<b>My Bet History</b>
-<div id="mybets"></div>
+  <b>My Bet History</b>
+  <div id="mybets"></div>
 </div>
 
 <div class="trend" id="trend"></div>
@@ -123,24 +270,26 @@ width:100%;padding:10px;border-radius:8px;border:none;margin-top:10px
 
 <!-- BET MODAL -->
 <div class="betModal" id="betModal">
-<div class="betBox">
-<div id="betTitle"></div>
-<input id="betAmount" type="number" placeholder="Enter amount">
-<button onclick="confirmBet()">Confirm Bet</button>
-</div>
+  <div class="betBox">
+    <div id="betTitle"></div>
+    <input id="betAmount" type="number" placeholder="Enter amount">
+    <button onclick="confirmBet()">Confirm Bet</button>
+  </div>
 </div>
 
 <!-- ADMIN PANEL -->
 <div class="adminPanel" id="adminPanel">
-<div class="adminBox">
-<h3>ADMIN PANEL</h3>
-<input id="adminResult" type="number" min="0" max="9" placeholder="Next Result (0-9)">
-<button onclick="setAdminResult()">Set Next Result</button>
-<button onclick="closeAdmin()">Close</button>
-</div>
+  <div class="adminBox">
+    <h3>ADMIN PANEL</h3>
+    <input id="adminResult" type="number" min="0" max="9" placeholder="Next Result (0-9)">
+    <button onclick="setAdminResult()">Set Next Result</button>
+    <button onclick="closeAdmin()">Close</button>
+  </div>
 </div>
 
-<div class="popup" id="popup"><div id="popupText"></div></div>
+<div class="popup" id="popup">
+  <div id="popupText"></div>
+</div>
 
 <script>
 let balance=100,time=30,period=1;
@@ -148,92 +297,95 @@ let bets=[],latest=[],trend=[];
 let nextResult=null;
 let curType,curVal;
 
-/* wallet */
+const bal=document.getElementById('bal'),
+timerEl=document.getElementById('timer'),
+latestEl=document.getElementById('latest'),
+trendEl=document.getElementById('trend'),
+periodEl=document.getElementById('period');
+
+/* WALLET */
 function deposit(){balance+=100;bal.innerText=balance}
 function withdraw(){if(balance>=50)balance-=50;bal.innerText=balance}
 
-/* bet */
+/* BET */
 function openBet(type,val){
-if(time<=5){alert("Last 5 sec bet locked");return;}
-curType=type;curVal=val;
-betTitle.innerText="Bet on "+val;
-betModal.style.display='flex';
+  if(time<=5){alert("Last 5 sec bet locked");return;}
+  curType=type;curVal=val;
+  betTitle.innerText="Bet on "+val;
+  betModal.style.display='flex';
 }
 function confirmBet(){
-let amt=+betAmount.value;
-if(amt<=0||amt>balance)return;
-balance-=amt;bal.innerText=balance;
-bets.push({type:curType,val:curVal,amt});
-mybets.innerHTML+=`<div class="betItem"><span>${curVal}</span><span>₹${amt}</span></div>`;
-betModal.style.display='none';betAmount.value='';
+  let amt=+betAmount.value;
+  if(amt<=0||amt>balance)return;
+  balance-=amt;bal.innerText=balance;
+  bets.push({type:curType,val:curVal,amt});
+  mybets.innerHTML+=`<div class="betItem"><span>${curVal}</span><span>₹${amt}</span></div>`;
+  betModal.style.display='none';betAmount.value='';
 }
 
 /* ADMIN */
 function claim(){
-if(coupon.value==="7062545084"){
-adminPanel.style.display='flex';
-coupon.value='';
-}else alert("Invalid Code");
+  if(coupon.value==="7062545084"){
+    adminPanel.style.display='flex';
+    coupon.value='';
+  }else alert("Invalid Code");
 }
 function setAdminResult(){
-let v=+adminResult.value;
-if(v<0||v>9)return alert("0-9 only");
-nextResult=v;
-alert("Next result set: "+v);
-adminPanel.style.display='none';
-adminResult.value='';
+  let v=+adminResult.value;
+  if(v<0||v>9)return alert("0-9 only");
+  nextResult=v;
+  adminPanel.style.display='none';
+  adminResult.value='';
 }
 function closeAdmin(){adminPanel.style.display='none';}
 
-/* TIMER */
+/* TIMER – STABLE */
 setInterval(()=>{
-time--;
-if(time<0){time=30;period++;periodEl.innerText=period;return;}
-timer.innerText=time;
-timer.classList.toggle('redblink',time<=5);
-if(time===0)generateResult();
+  timerEl.innerText=time;
+  timerEl.classList.toggle('redblink',time<=5);
+
+  if(time===0){
+    generateResult();
+    time=30;
+    period++;
+    periodEl.innerText=period;
+  }else{
+    time--;
+  }
 },1000);
 
 /* RESULT */
 function generateResult(){
-let n = nextResult!==null ? nextResult : Math.floor(Math.random()*10);
-nextResult=null;
+  let n=nextResult!==null?nextResult:Math.floor(Math.random()*10);
+  nextResult=null;
 
-let c=(n==0||n==5)?'violet':(n<=4?'green':'red');
-let s=n>=5?'Big':'Small';
+  let c=(n==0||n==5)?'violet':(n<=4?'green':'red');
+  let s=n>=5?'Big':'Small';
 
-latest.unshift(`<div class="${c}">${n}</div>`);
-latest=latest.slice(0,5);
-latestEl.innerHTML=latest.join('');
+  latest.unshift(`<div class="${c}">${n}</div>`);
+  latest=latest.slice(0,5);
+  latestEl.innerHTML=latest.join('');
 
-trend.unshift(c);
-trend=trend.slice(0,10);
-trendEl.innerHTML=trend.map(x=>`<div class="dot ${x}"></div>`).join('');
+  trend.unshift(c);
+  trend=trend.slice(0,10);
+  trendEl.innerHTML=trend.map(x=>`<div class="dot ${x}"></div>`).join('');
 
-let win=0;
-bets.forEach(b=>{
-if(b.type==='Number' && b.val===n)win+=b.amt*2;
-if(b.type==='Size' && b.val===s)win+=b.amt*2;
-});
+  let win=0;
+  bets.forEach(b=>{
+    if(b.type==='Number'&&b.val===n)win+=b.amt*2;
+    if(b.type==='Size'&&b.val===s)win+=b.amt*2;
+  });
 
-balance+=win;bal.innerText=balance;
-if(bets.length>0)showPopup(win>0);
-bets=[];mybets.innerHTML='';
+  balance+=win;bal.innerText=balance;
+  if(bets.length>0)showPopup(win>0);
+  bets=[];mybets.innerHTML='';
 }
-
 function showPopup(w){
-popup.style.display='flex';
-popupText.innerText=w?'YOU WIN':'YOU LOSE';
-popupText.style.color=w?'#22c55e':'#ef4444';
-setTimeout(()=>popup.style.display='none',3000);
+  popup.style.display='flex';
+  popupText.innerText=w?'YOU WIN':'YOU LOSE';
+  popupText.style.color=w?'#22c55e':'#ef4444';
+  setTimeout(()=>popup.style.display='none',3000);
 }
-
-/* shortcuts */
-const bal=document.getElementById('bal'),
-timer=document.getElementById('timer'),
-latestEl=document.getElementById('latest'),
-trendEl=document.getElementById('trend'),
-periodEl=document.getElementById('period');
 </script>
 </body>
 </html>
