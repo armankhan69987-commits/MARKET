@@ -86,7 +86,7 @@ button.danger{background:#ef4444;color:#fff}
     </div>
     <input id="utrInput" placeholder="Enter UTR / Transaction ID">
     <button onclick="submitDeposit()">Submit Deposit</button>
-    <p class="small">Deposit will be approved manually</p>
+    <p class="small">UPI app will open automatically</p>
   </div>
 
   <div class="card">
@@ -126,7 +126,6 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* 🔥 YOUR NEW FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyDCRzNqoUD1TARXKrgf2g94vOYPd4BjLlY",
   authDomain: "smash-stock-28150.firebaseapp.com",
@@ -142,29 +141,31 @@ const db = getFirestore(app);
 
 /* AUTH */
 window.signup = async () => {
-  const emailVal = document.getElementById("emailInput").value;
-  const passVal  = document.getElementById("passwordInput").value;
-  if(!emailVal || !passVal) return alert("Fill all fields");
+  const email = emailInput.value;
+  const pass  = passwordInput.value;
+  if(!email || !pass) return alert("Fill all fields");
 
-  const res = await createUserWithEmailAndPassword(auth, emailVal, passVal);
+  const res = await createUserWithEmailAndPassword(auth,email,pass);
 
   await setDoc(doc(db,"users",res.user.uid),{
-    email: emailVal,
-    wallet: 0,
-    created: serverTimestamp()
+    email,
+    wallet:0,
+    created:serverTimestamp()
   });
 };
 
 window.login = async () => {
-  const emailVal = document.getElementById("emailInput").value;
-  const passVal  = document.getElementById("passwordInput").value;
-  await signInWithEmailAndPassword(auth, emailVal, passVal);
+  await signInWithEmailAndPassword(
+    auth,
+    emailInput.value,
+    passwordInput.value
+  );
 };
 
 window.logout = () => signOut(auth);
 
 /* AUTH STATE */
-onAuthStateChanged(auth, async user=>{
+onAuthStateChanged(auth, user=>{
   if(!user){
     authBox.classList.remove("hidden");
     dashboard.classList.add("hidden");
@@ -178,60 +179,63 @@ onAuthStateChanged(auth, async user=>{
 
 /* WALLET */
 async function loadWallet(){
-  const uid = auth.currentUser.uid;
-  const snap = await getDoc(doc(db,"users",uid));
-  wallet.innerText = snap.data().wallet;
+  const snap = await getDoc(doc(db,"users",auth.currentUser.uid));
+  wallet.innerText = snap.exists() ? snap.data().wallet : 0;
 }
 
-/* DEPOSIT */
+/* DEPOSIT + UPI AUTO OPEN */
 window.submitDeposit = async () => {
-  const utrVal = document.getElementById("utrInput").value;
-  if(!utrVal) return alert("Enter UTR");
+  const utr = utrInput.value;
+  if(!utr) return alert("Enter UTR");
 
   await addDoc(collection(db,"deposits"),{
-    uid: auth.currentUser.uid,
-    amount: 20,
-    utr: utrVal,
-    status: "pending",
-    time: serverTimestamp()
+    uid:auth.currentUser.uid,
+    amount:20,
+    utr,
+    status:"pending",
+    time:serverTimestamp()
   });
 
-  document.getElementById("utrInput").value="";
-  alert("Deposit submitted. Waiting for approval.");
+  const upi =
+    "upi://pay?pa=riya09876@ybl&pn=Contest%20Entry&am=20&cu=INR&tn=₹20%20Contest";
+
+  window.location.href = upi;
+  utrInput.value="";
 };
 
 /* PARTICIPATE */
 window.participate = async () => {
-  const uid = auth.currentUser.uid;
-  const ref = doc(db,"users",uid);
+  const ref = doc(db,"users",auth.currentUser.uid);
   const snap = await getDoc(ref);
 
   if(snap.data().wallet < 20){
-    joinMsg.innerText = "Insufficient balance";
+    joinMsg.innerText="Insufficient balance";
     return;
   }
 
   await updateDoc(ref,{
-    wallet: snap.data().wallet - 20
+    wallet:snap.data().wallet - 20
   });
 
   await addDoc(collection(db,"participants"),{
-    uid,
-    joined: serverTimestamp()
+    uid:auth.currentUser.uid,
+    joined:serverTimestamp()
   });
 
-  joinMsg.innerText = "Successfully joined contest";
+  joinMsg.innerText="Successfully joined contest";
   loadWallet();
 };
 
 /* WINNER */
 async function loadWinner(){
-  const winSnap = await getDoc(doc(db,"winner","current"));
-  if(winSnap.exists()){
-    winnerText.innerText =
-      "Winner: " + winSnap.data().email +
-      " | Prize: " + winSnap.data().prize;
+  const snap = await getDoc(doc(db,"winners","current"));
+  if(!snap.exists()){
+    winnerText.innerText="No winner announced yet";
+    return;
   }
+  const w = snap.data();
+  winnerText.innerText =
+    "Winner: " + w.email + " | Prize: " + w.prize;
 }
 </script>
 
