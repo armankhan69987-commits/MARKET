@@ -8,15 +8,21 @@
 <style>
 *{box-sizing:border-box;font-family:Segoe UI,Roboto,Arial}
 body{margin:0;background:#0f172a;color:#fff}
-.container{max-width:420px;margin:auto;padding:20px}
-.card{
-  background:#111827;
-  border-radius:14px;
-  padding:20px;
-  margin-bottom:15px;
-  box-shadow:0 0 20px rgba(0,0,0,.7)
+.container{max-width:420px;margin:auto;padding:15px}
+
+/* Instagram Slider */
+.insta-slider{height:100px;overflow:hidden;border-radius:12px;margin-bottom:15px}
+.slides{display:flex;width:300%;animation:slide 12s infinite}
+.slides img{width:100%;height:100px;object-fit:cover}
+@keyframes slide{
+  0%{transform:translateX(0)}
+  33%{transform:translateX(-100%)}
+  66%{transform:translateX(-200%)}
 }
-h2,h3{text-align:center;margin:10px 0}
+
+/* Cards */
+.card{background:#111827;border-radius:14px;padding:20px;margin-bottom:15px}
+h2,h3{text-align:center;margin:8px 0}
 input,button{
   width:100%;
   padding:12px;
@@ -26,39 +32,44 @@ input,button{
   font-size:15px
 }
 input{background:#1f2933;color:#fff}
-button{
-  background:#22c55e;
-  color:#000;
-  font-weight:700;
-  cursor:pointer
-}
+button{background:#22c55e;color:#000;font-weight:700;cursor:pointer}
 button.danger{background:#ef4444;color:#fff}
 .hidden{display:none}
-.wallet{
-  font-size:26px;
-  font-weight:700;
-  text-align:center;
-  margin:10px 0
+.wallet{font-size:26px;font-weight:700;text-align:center}
+.small{text-align:center;font-size:13px;color:#9ca3af}
+
+/* Winner */
+.winner-box{text-align:center}
+.winner-box img{
+  width:70px;height:70px;border-radius:50%;
+  object-fit:cover;border:2px solid #22c55e;margin-bottom:5px
 }
-.upi{
+
+/* Withdrawal History */
+.history{
   background:#020617;
   padding:10px;
-  border-radius:8px;
-  text-align:center;
-  margin-top:10px
+  border-radius:10px;
+  margin-top:10px;
+  font-size:14px
 }
-.small{
-  font-size:13px;
-  color:#9ca3af;
-  text-align:center
-}
-.success{color:#22c55e;text-align:center}
-.warning{color:#facc15;text-align:center}
+.pending{color:#facc15}
+.approved{color:#22c55e}
+.rejected{color:#ef4444}
 </style>
 </head>
 
 <body>
 <div class="container">
+
+<!-- Instagram Slider -->
+<div class="insta-slider">
+  <div class="slides">
+    <img src="https://picsum.photos/400/200?1">
+    <img src="https://picsum.photos/400/200?2">
+    <img src="https://picsum.photos/400/200?3">
+  </div>
+</div>
 
 <!-- AUTH -->
 <div id="authBox" class="card">
@@ -67,175 +78,187 @@ button.danger{background:#ef4444;color:#fff}
   <input id="passwordInput" type="password" placeholder="Password">
   <button onclick="signup()">Sign Up</button>
   <button onclick="login()">Login</button>
-  <p class="small">₹20 participation contest</p>
 </div>
 
 <!-- DASHBOARD -->
 <div id="dashboard" class="hidden">
 
-  <div class="card">
-    <h3>Wallet Balance</h3>
-    <div class="wallet">₹ <span id="wallet">0</span></div>
+<div class="card">
+  <h3>Wallet Balance</h3>
+  <div class="wallet">₹ <span id="wallet">0</span></div>
+</div>
+
+<div class="card">
+  <h3>Winner</h3>
+  <div class="winner-box">
+    <img id="winnerPhoto">
+    <h4 id="winnerName">No winner yet</h4>
+    <p id="winnerPrize"></p>
   </div>
+</div>
 
-  <div class="card">
-    <h3>Deposit ₹20</h3>
-    <div class="upi">
-      Pay ₹20 to<br>
-      <b>riya09876@ybl</b>
-    </div>
-    <input id="utrInput" placeholder="Enter UTR / Transaction ID">
-    <button onclick="submitDeposit()">Submit Deposit</button>
-    <p class="small">UPI app will open automatically</p>
-  </div>
+<div class="card">
+  <h3>Participate</h3>
+  <button onclick="participate()">Join Contest – ₹20</button>
+  <p id="joinMsg" class="small"></p>
+</div>
 
-  <div class="card">
-    <h3>Participate</h3>
-    <button onclick="participate()">Join Contest – ₹20</button>
-    <p id="joinMsg" class="small"></p>
-  </div>
+<div class="card">
+  <h3>Deposit ₹20</h3>
+  <button onclick="openUPI()">Pay ₹20 via UPI</button>
+  <input id="utrInput" placeholder="Enter UTR / Transaction ID">
+  <button onclick="submitDeposit()">Submit Deposit</button>
+</div>
 
-  <div class="card">
-    <h3>Winner</h3>
-    <p id="winnerText" class="success">No winner announced yet</p>
-  </div>
+<!-- Withdrawal -->
+<div class="card">
+  <h3>Withdrawal</h3>
+  <input id="withdrawUpi" placeholder="Enter your UPI ID">
+  <input id="withdrawAmount" type="number" placeholder="Enter amount">
+  <button onclick="submitWithdrawal()">Request Withdrawal</button>
+  <div id="withdrawHistory"></div>
+</div>
 
-  <button class="danger" onclick="logout()">Logout</button>
-
+<button class="danger" onclick="logout()">Logout</button>
 </div>
 </div>
 
-<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut
+  getAuth,createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,onAuthStateChanged,signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
-  getFirestore,
-  doc,
-  setDoc,
-  getDoc,
-  updateDoc,
-  addDoc,
-  collection,
-  serverTimestamp
+  getFirestore,doc,setDoc,getDoc,updateDoc,
+  addDoc,collection,serverTimestamp,
+  query,where,orderBy,getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDCRzNqoUD1TARXKrgf2g94vOYPd4BjLlY",
-  authDomain: "smash-stock-28150.firebaseapp.com",
-  projectId: "smash-stock-28150",
-  storageBucket: "smash-stock-28150.firebasestorage.app",
-  messagingSenderId: "1004308967058",
-  appId: "1:1004308967058:web:5125c899758d8390ed004b"
+/* Firebase */
+const firebaseConfig={
+  apiKey:"AIzaSyDCRzNqoUD1TARXKrgf2g94vOYPd4BjLlY",
+  authDomain:"smash-stock-28150.firebaseapp.com",
+  projectId:"smash-stock-28150",
+  storageBucket:"smash-stock-28150.firebasestorage.app",
+  messagingSenderId:"1004308967058",
+  appId:"1:1004308967058:web:5125c899758d8390ed004b"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
 
 /* AUTH */
-window.signup = async () => {
-  const email = emailInput.value;
-  const pass  = passwordInput.value;
-  if(!email || !pass) return alert("Fill all fields");
-
-  const res = await createUserWithEmailAndPassword(auth,email,pass);
-
-  await setDoc(doc(db,"users",res.user.uid),{
-    email,
-    wallet:0,
-    created:serverTimestamp()
-  });
+window.signup=async()=>{
+  const r=await createUserWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
+  await setDoc(doc(db,"users",r.user.uid),{wallet:0});
 };
-
-window.login = async () => {
-  await signInWithEmailAndPassword(
-    auth,
-    emailInput.value,
-    passwordInput.value
-  );
-};
-
-window.logout = () => signOut(auth);
+window.login=()=>signInWithEmailAndPassword(auth,emailInput.value,passwordInput.value);
+window.logout=()=>signOut(auth);
 
 /* AUTH STATE */
-onAuthStateChanged(auth, user=>{
-  if(!user){
+onAuthStateChanged(auth,async u=>{
+  if(!u){
     authBox.classList.remove("hidden");
     dashboard.classList.add("hidden");
     return;
   }
   authBox.classList.add("hidden");
   dashboard.classList.remove("hidden");
-  loadWallet();
-  loadWinner();
+
+  const s=await getDoc(doc(db,"users",u.uid));
+  wallet.innerText=s.data().wallet;
+
+  loadWithdrawHistory();
+
+  const w=await getDoc(doc(db,"winner","current"));
+  if(w.exists()){
+    winnerName.innerText=w.data().name;
+    winnerPrize.innerText=w.data().prize;
+    winnerPhoto.src=w.data().photo;
+  }
 });
 
-/* WALLET */
-async function loadWallet(){
-  const snap = await getDoc(doc(db,"users",auth.currentUser.uid));
-  wallet.innerText = snap.exists() ? snap.data().wallet : 0;
-}
+/* UPI */
+window.openUPI=()=>{
+  location.href="upi://pay?pa=riya09876@ybl&pn=Contest&am=20&cu=INR";
+};
 
-/* DEPOSIT + UPI AUTO OPEN */
-window.submitDeposit = async () => {
-  const utr = utrInput.value;
-  if(!utr) return alert("Enter UTR");
-
+/* Deposit */
+window.submitDeposit=async()=>{
+  if(!utrInput.value) return alert("Enter UTR");
   await addDoc(collection(db,"deposits"),{
     uid:auth.currentUser.uid,
     amount:20,
-    utr,
+    utr:utrInput.value,
+    status:"pending",
+    time:serverTimestamp()
+  });
+  utrInput.value="";
+  alert("Deposit submitted");
+};
+
+/* Participate */
+window.participate=async()=>{
+  const ref=doc(db,"users",auth.currentUser.uid);
+  const s=await getDoc(ref);
+  if(s.data().wallet<20){
+    joinMsg.innerText="Insufficient balance";
+    return;
+  }
+  await updateDoc(ref,{wallet:s.data().wallet-20});
+  wallet.innerText=s.data().wallet-20;
+  joinMsg.innerText="Joined successfully";
+};
+
+/* Withdrawal */
+window.submitWithdrawal=async()=>{
+  const upi=withdrawUpi.value;
+  const amount=Number(withdrawAmount.value);
+
+  const ref=doc(db,"users",auth.currentUser.uid);
+  const s=await getDoc(ref);
+
+  if(amount>s.data().wallet){
+    alert("Insufficient balance");
+    return;
+  }
+
+  await updateDoc(ref,{wallet:s.data().wallet-amount});
+  wallet.innerText=s.data().wallet-amount;
+
+  await addDoc(collection(db,"withdrawals"),{
+    uid:auth.currentUser.uid,
+    upi,amount,
     status:"pending",
     time:serverTimestamp()
   });
 
-  const upi =
-    "upi://pay?pa=riya09876@ybl&pn=Contest%20Entry&am=20&cu=INR&tn=₹20%20Contest";
-
-  window.location.href = upi;
-  utrInput.value="";
+  withdrawUpi.value="";
+  withdrawAmount.value="";
+  loadWithdrawHistory();
 };
 
-/* PARTICIPATE */
-window.participate = async () => {
-  const ref = doc(db,"users",auth.currentUser.uid);
-  const snap = await getDoc(ref);
-
-  if(snap.data().wallet < 20){
-    joinMsg.innerText="Insufficient balance";
-    return;
-  }
-
-  await updateDoc(ref,{
-    wallet:snap.data().wallet - 20
+/* Withdrawal History */
+async function loadWithdrawHistory(){
+  withdrawHistory.innerHTML="";
+  const q=query(
+    collection(db,"withdrawals"),
+    where("uid","==",auth.currentUser.uid),
+    orderBy("time","desc")
+  );
+  const snap=await getDocs(q);
+  snap.forEach(d=>{
+    const x=d.data();
+    withdrawHistory.innerHTML+=`
+      <div class="history ${x.status}">
+        ₹${x.amount}<br>
+        UPI: ${x.upi}<br>
+        Status: ${x.status}
+      </div>
+    `;
   });
-
-  await addDoc(collection(db,"participants"),{
-    uid:auth.currentUser.uid,
-    joined:serverTimestamp()
-  });
-
-  joinMsg.innerText="Successfully joined contest";
-  loadWallet();
-};
-
-/* WINNER */
-async function loadWinner(){
-  const snap = await getDoc(doc(db,"winners","current"));
-  if(!snap.exists()){
-    winnerText.innerText="No winner announced yet";
-    return;
-  }
-  const w = snap.data();
-  winnerText.innerText =
-    "Winner: " + w.email + " | Prize: " + w.prize;
 }
 </script>
 
